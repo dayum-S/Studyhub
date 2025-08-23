@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Mastery Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      color: #333;
+    }
+    header {
+      background: #1e90ff;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      background: #eee;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+    }
+    nav button {
+      padding: 10px;
+      border: none;
+      background: #1e90ff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background: #155fa0;
+    }
+    section {
+      display: none;
+      padding: 20px;
+    }
+    section.active {
+      display: block;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .flashcard {
+      background: #fff;
+      border: 2px solid #1e90ff;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .game-question {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .option {
+      display: block;
+      padding: 10px;
+      margin: 5px 0;
+      background: #eee;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background: #ddd;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #1e90ff;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    .ads {
+      background: #ddd;
+      text-align: center;
+      padding: 10px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📘 Study Mastery Hub</h1>
+    <p>Flashcards • Feynman • Active Recall • Dashboard</p>
+  </header>
+
+  <nav>
+    <button onclick="showSection('dashboard')">Dashboard</button>
+    <button onclick="showSection('flashcards')">Flashcards</button>
+    <button onclick="showSection('feynman')">Feynman</button>
+    <button onclick="showSection('recall')">Recall Game</button>
+  </nav>
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="active">
+    <h2>📊 Dashboard</h2>
+    <div class="card">Flashcards studied: <span id="flashCount">0</span></div>
+    <div class="card">Feynman notes written: <span id="feynmanCount">0</span></div>
+    <div class="card">Recall questions answered: <span id="recallCount">0</span></div>
+    <div class="ads">Ad space (your revenue here 💰)</div>
+  </section>
+
+  <!-- Flashcards -->
+  <section id="flashcards">
+    <h2>🃏 Flashcards</h2>
+    <div id="flashcard" class="flashcard">Tap to flip</div>
+    <button onclick="nextFlashcard()">Next</button>
+  </section>
+
+  <!-- Feynman -->
+  <section id="feynman">
+    <h2>✍️ Feynman Technique</h2>
+    <textarea id="feynmanInput" rows="6" style="width:100%;" placeholder="Explain the topic in simple words..."></textarea>
+    <br>
+    <button onclick="saveFeynman()">Save Explanation</button>
+    <div id="feynmanNotes"></div>
+  </section>
+
+  <!-- Recall Game -->
+  <section id="recall">
+    <h2>🎮 Active Recall Game</h2>
+    <div class="game-question" id="question"></div>
+    <div id="options"></div>
+    <button onclick="nextQuestion()">Next Question</button>
+  </section>
+
+  <footer>
+    🚀 Built for learning & focus
+  </footer>
+
+  <script>
+    // Navigation
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    // Flashcards
+    const flashcards = [
+      { q: "What is photosynthesis?", a: "Process by which plants make food using sunlight" },
+      { q: "Newton's 2nd Law?", a: "F = ma" },
+      { q: "Capital of Japan?", a: "Tokyo" }
+    ];
+    let currentFlash = 0;
+    let flipped = false;
+    function loadFlashcard() {
+      document.getElementById("flashcard").innerText = flashcards[currentFlash].q;
+      flipped = false;
+    }
+    document.getElementById("flashcard").onclick = function() {
+      if (!flipped) {
+        this.innerText = flashcards[currentFlash].a;
+        flipped = true;
+        document.getElementById("flashCount").innerText++;
+      } else {
+        this.innerText = flashcards[currentFlash].q;
+        flipped = false;
+      }
+    };
+    function nextFlashcard() {
+      currentFlash = (currentFlash + 1) % flashcards.length;
+      loadFlashcard();
+    }
+    loadFlashcard();
+
+    // Feynman
+    function saveFeynman() {
+      const text = document.getElementById("feynmanInput").value;
+      if (text.trim() !== "") {
+        const note = document.createElement("div");
+        note.className = "card";
+        note.innerText = text;
+        document.getElementById("feynmanNotes").appendChild(note);
+        document.getElementById("feynmanInput").value = "";
+        document.getElementById("feynmanCount").innerText++;
+      }
+    }
+
+    // Recall Game
+    const questions = [
+      { q: "What is H2O?", opts: ["Oxygen", "Water", "Hydrogen"], ans: "Water" },
+      { q: "Largest planet?", opts: ["Earth", "Jupiter", "Mars"], ans: "Jupiter" },
+      { q: "Speed of light?", opts: ["300,000 km/s", "150,000 km/s", "1,000 km/s"], ans: "300,000 km/s" }
+    ];
+    let currentQ = 0;
+    function loadQuestion() {
+      const q = questions[currentQ];
+      document.getElementById("question").innerText = q.q;
+      const optsDiv = document.getElementById("options");
+      optsDiv.innerHTML = "";
+      q.opts.forEach(opt => {
+        const btn = document.createElement("div");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (opt === q.ans) {
+            btn.style.background = "#90ee90";
+            document.getElementById("recallCount").innerText++;
+          } else {
+            btn.style.background = "#f08080";
+          }
+        };
+        optsDiv.appendChild(btn);
+      });
+    }
+    function nextQuestion() {
+      currentQ = (currentQ + 1) % questions.length;
+      loadQuestion();
+    }
+    loadQuestion();
+  </script>
+</body>
+</html>
